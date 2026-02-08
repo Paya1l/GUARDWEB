@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Secure Web App – Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at top, #141a3a, #050816);
+    color: #fff;
+    display: flex;
+    height: 100vh;
+}
+
+/* sidebar */
+.sidebar {
+    width: 240px;
+    padding: 28px 18px;
+    background: linear-gradient(180deg, #090d2a, #06081a);
+}
+
+.sidebar h2 {
+    margin-bottom: 32px;
+}
+
+.nav-item {
+    padding: 14px 18px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    color: #cfd4ff;
+}
+
+.nav-item.active {
+    background: #f4d35e;
+    color: #000;
+    font-weight: 600;
+}
+
+/* main layout */
+.main {
+    flex: 1;
+    padding: 36px;
+    overflow-y: auto;
+}
+
+.content-section { display: none; }
+.content-section.active { display: block; }
+
+/* dashboard header */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 26px;
+}
+
+.search-box {
+    background: #101633;
+    border: none;
+    padding: 12px 18px;
+    border-radius: 16px;
+    color: #fff;
+    width: 260px;
+    outline: none;
+}
+
+/* notification icon */
+.notification {
+    position: relative;
+    cursor: pointer;
+    font-size: 16px;
+    margin-right: 14px;
+}
+
+.notification span {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
+
+/* notification dropdown */
+.notification-panel {
+    position: absolute;
+    right: 0;
+    top: 36px;
+    width: 240px;
+    background: #101633;
+    border-radius: 14px;
+    padding: 14px;
+    display: none;
+    box-shadow: 0 20px 40px rgba(0,0,0,.5);
+}
+
+.notification-panel p {
+    font-size: 14px;
+    margin: 8px 0;
+}
+
+/* logout */
+.logout-btn {
+    background: linear-gradient(135deg,#ff5858,#ff2e63);
+    border: none;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.logout-btn:hover {
+    opacity: 0.9;
+}
+
+/* dashboard content */
+.dashboard-title {
+    font-size: 30px;
+    margin-bottom: 18px;
+}
+
+/* stats cards */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 30px;
+}
+
+.stat-box {
+    padding: 22px;
+    border-radius: 20px;
+    color: #fff;
+    box-shadow: 0 20px 40px rgba(0,0,0,.4);
+}
+
+.orange { background: linear-gradient(135deg,#ff7a18,#ffb347); }
+.blue { background: linear-gradient(135deg,#4facfe,#00f2fe); }
+.pink { background: linear-gradient(135deg,#f857a6,#ff5858); }
+
+.stat-box strong { font-size: 34px; }
+
+/* charts section */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+}
+
+.card {
+    background: linear-gradient(180deg,#1a2148,#101633);
+    border-radius: 24px;
+    padding: 26px;
+}
+
+/* simple activity bars */
+.bars {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    height: 160px;
+}
+
+.bar {
+    width: 24px;
+    border-radius: 12px;
+    background: linear-gradient(180deg,#6ecbff,#8f6cff);
+}
+
+/* security status */
+.goal {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    margin: auto;
+    background: conic-gradient(#ff7a18 40%, #4facfe 0 70%, #2a2f55 0);
+}
+
+.goal span {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+/* other pages */
+.section {
+    background: linear-gradient(180deg,#1a2148,#101633);
+    padding: 26px;
+    border-radius: 24px;
+}
+
+.section ul { line-height: 1.8; }
+</style>
+</head>
+
+<body>
+
+<!-- sidebar -->
+<div class="sidebar">
+    <h2>Secure Web App</h2>
+    <div class="nav-item active" onclick="changeSection('dashboard',this)">Dashboard</div>
+    <div class="nav-item" onclick="changeSection('sessions',this)">Sessions</div>
+    <div class="nav-item" onclick="changeSection('logs',this)">Security Logs</div>
+    <div class="nav-item" onclick="changeSection('access',this)">Access Control</div>
+    <div class="nav-item" onclick="changeSection('profile',this)">Profile</div>
+</div>
+
+<div class="main">
+
+<!-- dashboard -->
+<div id="dashboard" class="content-section active">
+
+    <div class="dashboard-header">
+        <input class="search-box" placeholder="Search sessions or logs..." />
+
+        <div style="display:flex; align-items:center;">
+            <div class="notification" onclick="toggleNotif()">
+                Alerts
+                <span>3</span>
+                <div class="notification-panel" id="notifyPanel">
+                    <p>Login detected from Chrome browser</p>
+                    <p>User updated account password</p>
+                    <p>Wrong password attempt detected</p>
+                </div>
+            </div>
+
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="dashboard-title">Security Dashboard</div>
+
+    <div class="summary-cards">
+        <div class="stat-box orange"><strong>19</strong><p>Active sessions</p></div>
+        <div class="stat-box blue"><strong>119</strong><p>Total logins</p></div>
+        <div class="stat-box pink"><strong>08</strong><p>Security alerts</p></div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="card">
+            <h3>Session activity</h3>
+            <div class="bars">
+                <div class="bar" style="height:40%"></div>
+                <div class="bar" style="height:70%"></div>
+                <div class="bar" style="height:55%"></div>
+                <div class="bar" style="height:85%"></div>
+                <div class="bar" style="height:60%"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Security status</h3>
+            <div class="goal"><span>50%</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- other sections -->
+<div id="sessions" class="content-section">
+    <h1>Active Sessions</h1>
+    <div class="section"><ul><li>Chrome – Active</li></ul></div>
+</div>
+
+<div id="logs" class="content-section">
+    <h1>Security Logs</h1>
+    <div class="section"><ul><li>Login success</li></ul></div>
+</div>
+
+<div id="access" class="content-section">
+    <h1>Access Control</h1>
+    <div class="section"><ul><li> View dashboard</li></ul></div>
+</div>
+
+<div id="profile" class="content-section">
+    <h1>User Profile</h1>
+    <div class="section"><p>Email: user@example.com</p></div>
+</div>
+
+</div>
+
+<script>
+// section switching logic
+function changeSection(id, el) {
+    document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    el.classList.add('active');
+}
+
+// simple toggle for notification panel
+function toggleNotif() {
+    const panel = document.getElementById("notifyPanel");
+    panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+// logout redirect
+function logout() {
+    window.location.href = "/logout";
+}
+</script>
+
+</body>
+</html>
