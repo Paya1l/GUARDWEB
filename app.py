@@ -10,7 +10,7 @@ app.secret_key = "simple_secret_key"
 EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
 
-# ---------------- DATABASE ----------------
+# DATABASE 
 def connect_db():
     return sqlite3.connect("database.db")
 
@@ -30,7 +30,7 @@ def init_db():
 init_db()
 
 
-# ---------------- LOGIN ----------------
+# LOGIN 
 @app.route("/", methods=["GET", "POST"])
 def login():
     # 🚫 already logged in → dashboard
@@ -64,7 +64,7 @@ def login():
     return render_template("login.html")
 
 
-# ---------------- REGISTER ----------------
+# REGISTER 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     # 🚫 logged-in users cannot register again
@@ -97,7 +97,7 @@ def register():
     return render_template("register.html")
 
 
-# ---------------- DASHBOARD ----------------
+#  DASHBOARD 
 @app.route("/dashboard")
 def dashboard():
     # 🔐 protect dashboard
@@ -106,7 +106,7 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-# ---------------- LOGOUT ----------------
+#  LOGOUT 
 @app.route("/logout")
 def logout():
     session.clear()
