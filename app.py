@@ -6,16 +6,15 @@ import re
 app = Flask(__name__)
 app.secret_key = "simple_secret_key"
 
-# email format check
+# Email validation pattern
 EMAIL_PATTERN = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
 
 
-# db connection
+# ---------------- DATABASE ----------------
 def connect_db():
     return sqlite3.connect("database.db")
 
 
-# creating users table
 def init_db():
     db = connect_db()
     db.execute("""
@@ -31,13 +30,17 @@ def init_db():
 init_db()
 
 
+# ---------------- LOGIN ----------------
 @app.route("/", methods=["GET", "POST"])
 def login():
+    # 🚫 already logged in → dashboard
+    if "user_id" in session:
+        return redirect("/dashboard")
+
     if request.method == "POST":
         email = request.form["email"].strip()
         password = request.form["password"]
 
-        # email check
         if not re.match(EMAIL_PATTERN, email):
             return "Invalid email format"
 
@@ -47,37 +50,36 @@ def login():
             (email,)
         ).fetchone()
 
-        # user not found
         if user is None:
             return "User not found"
 
-        # password check
         if not check_password_hash(user[2], password):
             return "Wrong password"
 
-        # session start
         session["user_id"] = user[0]
         session["email"] = user[1]
-
-        print("login:", email)
 
         return redirect("/dashboard")
 
     return render_template("login.html")
 
 
+# ---------------- REGISTER ----------------
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # 🚫 logged-in users cannot register again
+    if "user_id" in session:
+        return redirect("/dashboard")
+
     if request.method == "POST":
         email = request.form["email"].strip()
         password = request.form["password"]
 
-        # email check
         if not re.match(EMAIL_PATTERN, email):
             return "Invalid email format"
 
         if len(password) < 8:
-            return "Password too short"
+            return "Password must be at least 8 characters"
 
         hashed_password = generate_password_hash(password)
 
@@ -88,26 +90,26 @@ def register():
                 (email, hashed_password)
             )
             db.commit()
-            return redirect("/")
+            return redirect("/")  # back to login
         except sqlite3.IntegrityError:
             return "Email already exists"
 
     return render_template("register.html")
 
 
+# ---------------- DASHBOARD ----------------
 @app.route("/dashboard")
 def dashboard():
-    # allow only logged in users
+    # 🔐 protect dashboard
     if "user_id" not in session:
         return redirect("/")
     return render_template("dashboard.html")
 
 
+# ---------------- LOGOUT ----------------
 @app.route("/logout")
 def logout():
-    # clear session
     session.clear()
-    print("logout done")
     return redirect("/")
 
 

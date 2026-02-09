@@ -116,7 +116,28 @@ http://127.0.0.1:5000
 ----------------------------------------------------------------------------------------------------------------------------------
 
 ## Screenshots:
--Screenshots of the Login Page, Dashboard, Sessions, Logs, and Access Control pages are included in the project submission.
+
+1]Login Page
+![Login Page](screenshots/login.png)
+
+2]Register Page
+![Register Page](screenshots/register.png)
+
+3] Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+4] Sessions
+![Sessions](screenshots/sessions.png)
+
+5] Security Logs
+![Security Logs](screenshots/logs.png)
+
+6] Access Control
+![Access Control](screenshots/access-control.png)
+
+7] Profile
+![Profile](screenshots/profile.png)
+
 
 ----------------------------------------------------------------------------------------------------------------------------------
 
